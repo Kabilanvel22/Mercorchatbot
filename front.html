@@ -1,0 +1,44 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Personal Assistant Chatbot</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Personal Assistant Chatbot</h1>
+    <div id="chat"></div>
+    <input type="text" id="user_input" placeholder="Type your message here">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        const chatDiv = document.getElementById('chat');
+        const userInput = document.getElementById('user_input');
+
+        function appendMessage(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.innerHTML = `<strong>${role}:</strong> ${content}`;
+            chatDiv.appendChild(messageDiv);
+        }
+
+        function sendMessage() {
+            const userMessage = userInput.value;
+            appendMessage('You', userMessage);
+            userInput.value = '';
+
+            axios.post('/handle_messages', {
+                messages: [
+                    { role: 'user', content: userMessage }
+                ]
+            })
+            .then(response => {
+                const botMessage = response.data.messages[0].content;
+                appendMessage('Bot', botMessage);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
